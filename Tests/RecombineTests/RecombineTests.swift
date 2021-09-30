@@ -12,6 +12,7 @@ class RecombineTests: XCTestCase {
   enum Action {
     case increase
     case decrease
+    case toggle
   }
 
   typealias AppStore = Store<Action, State>
@@ -22,6 +23,8 @@ class RecombineTests: XCTestCase {
       return state.change(path: \.counter, to: state.counter + 1)
     case .decrease:
       return state.change(path: \.counter, to: state.counter - 1)
+    case .toggle:
+      return state.change(path: \.flag, to: !state.flag)
     }
   }
 
@@ -32,6 +35,7 @@ class RecombineTests: XCTestCase {
     )
 
     XCTAssertEqual(store.getState().counter, 0)
+    XCTAssertFalse(store.getState().flag)
   }
 
   func testReducers() {
@@ -45,6 +49,12 @@ class RecombineTests: XCTestCase {
     store.dispatch(.decrease)
 
     XCTAssertEqual(store.getState().counter, -1)
+    XCTAssertFalse(store.getState().flag)
+
+    store.dispatch(.toggle)
+
+    XCTAssertEqual(store.getState().counter, -1)
+    XCTAssertTrue(store.getState().flag)
   }
 
   func testMiddlewares() {
@@ -59,7 +69,7 @@ class RecombineTests: XCTestCase {
             dispatch(action)
             expectation.fulfill()
           }
-        case .decrease:
+        default:
           dispatch(action)
         }
       }
@@ -69,17 +79,17 @@ class RecombineTests: XCTestCase {
       (dispatch: @escaping AppStore.Dispatch) in
       return { (action: Action) in
         switch action {
-        case .increase:
-          dispatch(action)
         case .decrease:
           dispatch(action)
+          dispatch(action)
+        default:
           dispatch(action)
         }
       }
     }
 
     let store = AppStore(
-      initialState: State(flag: true),
+      initialState: State(flag: false),
       reducers: [counterReducer],
       middlewares: [asyncMiddleware, syncMiddleware]
     )
@@ -91,6 +101,11 @@ class RecombineTests: XCTestCase {
     waitForExpectations(timeout: 1)
 
     XCTAssertEqual(store.getState().counter, -3)
-  }
+    XCTAssertFalse(store.getState().flag)
 
+    store.dispatch(.toggle)
+
+    XCTAssertEqual(store.getState().counter, -3)
+    XCTAssertTrue(store.getState().flag)
+  }
 }
