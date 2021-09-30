@@ -1,6 +1,6 @@
 # Recombine
 
-Our take on a [Redux](https://github.com/reduxjs/redux)-inspired state framework for Swift.
+Our take on a [Redux](https://github.com/reduxjs/redux)-inspired state managment for Swift.
 
 ## Usage
 
