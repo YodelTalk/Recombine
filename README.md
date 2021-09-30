@@ -37,8 +37,9 @@ store.dispatch(.decrease)
 store.getState().counter // -1
 ```
 
-## Inspirations
+## Inspiration
 
+- https://elm-lang.org
 - https://github.com/reduxjs/redux
 - https://github.com/ReSwift/ReSwift
 - https://github.com/ReSwift/Recombine (yes, I stole the name)
