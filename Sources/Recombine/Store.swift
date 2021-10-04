@@ -25,10 +25,6 @@ public class Store<Action, StoreState>: Recombine {
     finalDispatch(action)
   }
 
-  public func getState() -> StoreState {
-    return state
-  }
-
   public subscript<T>(dynamicMember keyPath: KeyPath<StoreState, T>) -> T {
     return state[keyPath: keyPath]
   }
