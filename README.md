@@ -25,16 +25,25 @@ func counterReducer(action: Action, state: State) -> State {
   }
 }
 
+let logger = { (dispatch: @escaping AppStore.Dispatch, store: AppStore) in
+  return { (action: Action) in
+    print("Handling action: \(action)")
+    dispatch(action)
+    print("New state: \(store.counter)")
+  }
+}
+
 let store = AppStore(
   initialState: State(),
-  reducers: [counterReducer]
+  reducers: [counterReducer],
+  middlewares: [logger]
 )
 
 store.dispatch(.increase)
 store.dispatch(.decrease)
 store.dispatch(.decrease)
 
-store.getState().counter // -1
+store.counter // -1
 ```
 
 ## Inspiration
