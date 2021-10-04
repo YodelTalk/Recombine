@@ -61,7 +61,7 @@ class RecombineTests: XCTestCase {
     let expectation = self.expectation(description: "asyncMiddleware")
 
     let asyncMiddleware = {
-      (dispatch: @escaping AppStore.Dispatch) in
+      (dispatch: @escaping AppStore.Dispatch, store: AppStore) in
       return { (action: Action) in
         switch action {
         case .increase:
@@ -76,7 +76,7 @@ class RecombineTests: XCTestCase {
     }
 
     let syncMiddleware = {
-      (dispatch: @escaping AppStore.Dispatch) in
+      (dispatch: @escaping AppStore.Dispatch, store: AppStore) in
       return { (action: Action) in
         switch action {
         case .decrease:
@@ -107,5 +107,39 @@ class RecombineTests: XCTestCase {
 
     XCTAssertEqual(store.getState().counter, -3)
     XCTAssertTrue(store.getState().flag)
+  }
+
+  func testDispatchingMiddlewares() {
+    let expectation = self.expectation(description: "dispatchedAction")
+
+    let dispatchingMiddleware = {
+      (dispatch: @escaping AppStore.Dispatch, store: AppStore) in
+      return { (action: Action) in
+        switch action {
+        case .increase:
+          dispatch(action)
+          store.dispatch(.decrease)
+
+        case .decrease:
+          dispatch(action)
+          expectation.fulfill()
+
+        default:
+          dispatch(action)
+        }
+      }
+    }
+
+    let store = AppStore(
+      initialState: State(flag: false),
+      reducers: [counterReducer],
+      middlewares: [dispatchingMiddleware]
+    )
+
+    store.dispatch(.increase)
+
+    waitForExpectations(timeout: 1)
+
+    XCTAssertEqual(store.getState().counter, 0)
   }
 }

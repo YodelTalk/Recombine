@@ -6,7 +6,7 @@ public protocol Recombine: ObservableObject {
 
   typealias Reducer = (Action, StoreState) -> StoreState
   typealias Dispatch = (Action) -> Void
-  typealias Middleware = (@escaping Dispatch) -> Dispatch
+  typealias Middleware = (@escaping Dispatch, Store<Action, StoreState>) -> Dispatch
 
   func dispatch(_ action: Action)
   func getState() -> StoreState

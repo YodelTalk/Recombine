@@ -18,7 +18,7 @@ public class Store<Action, StoreState>: Recombine {
     }
 
     let finalDispatch = middlewares.reduce(
-      initialDispatch, { dispatch, middleware in middleware(dispatch) }
+      initialDispatch, { dispatch, middleware in middleware(dispatch, self) }
     )
 
     finalDispatch(action)
