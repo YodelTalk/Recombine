@@ -34,8 +34,8 @@ class RecombineTests: XCTestCase {
       reducers: []
     )
 
-    XCTAssertEqual(store.getState().counter, 0)
-    XCTAssertFalse(store.getState().flag)
+    XCTAssertEqual(store.counter, 0)
+    XCTAssertFalse(store.flag)
   }
 
   func testReducers() {
@@ -48,13 +48,13 @@ class RecombineTests: XCTestCase {
     store.dispatch(.decrease)
     store.dispatch(.decrease)
 
-    XCTAssertEqual(store.getState().counter, -1)
-    XCTAssertFalse(store.getState().flag)
+    XCTAssertEqual(store.counter, -1)
+    XCTAssertFalse(store.flag)
 
     store.dispatch(.toggle)
 
-    XCTAssertEqual(store.getState().counter, -1)
-    XCTAssertTrue(store.getState().flag)
+    XCTAssertEqual(store.counter, -1)
+    XCTAssertTrue(store.flag)
   }
 
   func testMiddlewares() {
@@ -100,13 +100,13 @@ class RecombineTests: XCTestCase {
 
     waitForExpectations(timeout: 1)
 
-    XCTAssertEqual(store.getState().counter, -3)
-    XCTAssertFalse(store.getState().flag)
+    XCTAssertEqual(store.counter, -3)
+    XCTAssertFalse(store.flag)
 
     store.dispatch(.toggle)
 
-    XCTAssertEqual(store.getState().counter, -3)
-    XCTAssertTrue(store.getState().flag)
+    XCTAssertEqual(store.counter, -3)
+    XCTAssertTrue(store.flag)
   }
 
   func testDispatchingMiddlewares() {
@@ -140,6 +140,6 @@ class RecombineTests: XCTestCase {
 
     waitForExpectations(timeout: 1)
 
-    XCTAssertEqual(store.getState().counter, 0)
+    XCTAssertEqual(store.counter, 0)
   }
 }

@@ -10,4 +10,5 @@ public protocol Recombine: ObservableObject {
 
   func dispatch(_ action: Action)
   func getState() -> StoreState
+  subscript<T>(dynamicMember keyPath: KeyPath<StoreState, T>) -> T { get }
 }

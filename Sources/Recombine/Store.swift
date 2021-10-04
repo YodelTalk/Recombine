@@ -1,5 +1,6 @@
 import Combine
 
+@dynamicMemberLookup
 public class Store<Action, StoreState>: Recombine {
   @Published private(set) var state: StoreState
 
@@ -26,5 +27,9 @@ public class Store<Action, StoreState>: Recombine {
 
   public func getState() -> StoreState {
     return state
+  }
+
+  public subscript<T>(dynamicMember keyPath: KeyPath<StoreState, T>) -> T {
+    return state[keyPath: keyPath]
   }
 }
