@@ -1,4 +1,4 @@
-# Recombine
+# Recombine ![test](https://github.com/yodeltalk/recombine/actions/workflows/test.yml/badge.svg)
 
 Our take on a [Redux](https://github.com/reduxjs/redux)-inspired state managment for Swift.
 
