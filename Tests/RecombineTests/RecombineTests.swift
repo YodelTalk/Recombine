@@ -142,4 +142,21 @@ class RecombineTests: XCTestCase {
 
     XCTAssertEqual(store.counter, 0)
   }
+
+  func testCompletionHandlers() {
+    let store = AppStore(
+      initialState: State(flag: false),
+      reducers: [counterReducer]
+    )
+
+    store.dispatch(.increase) {
+      XCTAssertEqual(store.counter, 1)
+    }
+    store.dispatch(.decrease) {
+      XCTAssertEqual(store.counter, 0)
+    }
+    store.dispatch(.decrease) {
+      XCTAssertEqual(store.counter, -1)
+    }
+  }
 }

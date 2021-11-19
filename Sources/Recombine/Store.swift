@@ -13,7 +13,7 @@ public class Store<Action, StoreState>: Recombine {
     self.middlewares = middlewares
   }
 
-  public func dispatch(_ action: Action) {
+  public func dispatch(_ action: Action, completion: (() -> Void)? = {}) {
     let initialDispatch = { (_ action: Action) in
       self.state = self.reducers.reduce(self.state, { state, reducer in reducer(action, state) })
     }
@@ -23,6 +23,10 @@ public class Store<Action, StoreState>: Recombine {
     )
 
     finalDispatch(action)
+
+    if let completion = completion {
+      completion()
+    }
   }
 
   public subscript<T>(dynamicMember keyPath: KeyPath<StoreState, T>) -> T {
