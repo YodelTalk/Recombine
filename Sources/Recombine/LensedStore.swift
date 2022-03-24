@@ -1,5 +1,6 @@
 import Combine
 
+@dynamicMemberLookup
 public class LensedStore<Action, StoreState, LensedStoreState>: ObservableObject, Recombine {
   public init(_ store: Store<Action, StoreState>, keyPath: KeyPath<StoreState, LensedStoreState>) {
     self.store = store
