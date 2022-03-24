@@ -1,7 +1,6 @@
 import Combine
+import Recombine
 import XCTest
-
-@testable import Recombine
 
 class RecombineTests: XCTestCase {
   func testInitialState() {
