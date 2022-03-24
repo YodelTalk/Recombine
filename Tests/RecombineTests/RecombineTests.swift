@@ -120,6 +120,30 @@ class RecombineTests: XCTestCase {
 
     XCTAssertEqual(store.counter, 0)
   }
+
+  func testSubStateLensing() {
+    let store = AppStore(
+      initialState: State(flag: false),
+      reducers: [counterReducer]
+    )
+
+    XCTAssertEqual(store.counter, 0)
+    XCTAssertFalse(store.flag)
+
+    let counterLense = store.lense(\.counter)
+    let flagLense = store.lense(\.flag)
+
+    XCTAssertEqual(counterLense.state, 0)
+    XCTAssertFalse(flagLense.state)
+
+    store.dispatch(.increase)
+
+    XCTAssertEqual(counterLense.state, 1)
+    XCTAssertFalse(flagLense.state)
+
+    XCTAssertEqual(store.counter, counterLense.state)
+    XCTAssertEqual(store.flag, flagLense.state)
+  }
 }
 
 extension RecombineTests {
