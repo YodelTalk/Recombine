@@ -1,0 +1,4 @@
+--indent 2
+--enable isEmpty
+--enable organizeDeclarations
+--markcategories false

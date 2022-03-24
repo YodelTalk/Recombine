@@ -4,30 +4,6 @@ import XCTest
 @testable import Recombine
 
 class RecombineTests: XCTestCase {
-  struct State: Changeable {
-    var counter = 0
-    var flag: Bool
-  }
-
-  enum Action {
-    case increase
-    case decrease
-    case toggle
-  }
-
-  typealias AppStore = Store<Action, State>
-
-  func counterReducer(action: Action, state: State) -> State {
-    switch action {
-    case .increase:
-      return state.change(\.counter, to: state.counter + 1)
-    case .decrease:
-      return state.change(\.counter, to: state.counter - 1)
-    case .toggle:
-      return state.change(\.flag, to: !state.flag)
-    }
-  }
-
   func testInitialState() {
     let store = AppStore(
       initialState: State(flag: false),
@@ -61,31 +37,33 @@ class RecombineTests: XCTestCase {
     let expectation = self.expectation(description: "asyncMiddleware")
 
     let asyncMiddleware = {
-      (dispatch: @escaping AppStore.Dispatch, store: AppStore) in
-      return { (action: Action) in
-        switch action {
-        case .increase:
-          DispatchQueue.main.async {
+      (dispatch: @escaping AppStore.Dispatch, _: AppStore) in
+        { (action: Action) in
+          switch action {
+          case .increase:
+            DispatchQueue.main.async {
+              dispatch(action)
+              expectation.fulfill()
+            }
+
+          default:
             dispatch(action)
-            expectation.fulfill()
           }
-        default:
-          dispatch(action)
         }
-      }
     }
 
     let syncMiddleware = {
-      (dispatch: @escaping AppStore.Dispatch, store: AppStore) in
-      return { (action: Action) in
-        switch action {
-        case .decrease:
-          dispatch(action)
-          dispatch(action)
-        default:
-          dispatch(action)
+      (dispatch: @escaping AppStore.Dispatch, _: AppStore) in
+        { (action: Action) in
+          switch action {
+          case .decrease:
+            dispatch(action)
+            dispatch(action)
+
+          default:
+            dispatch(action)
+          }
         }
-      }
     }
 
     let store = AppStore(
@@ -114,20 +92,20 @@ class RecombineTests: XCTestCase {
 
     let dispatchingMiddleware = {
       (dispatch: @escaping AppStore.Dispatch, store: AppStore) in
-      return { (action: Action) in
-        switch action {
-        case .increase:
-          dispatch(action)
-          store.dispatch(.decrease)
+        { (action: Action) in
+          switch action {
+          case .increase:
+            dispatch(action)
+            store.dispatch(.decrease)
 
-        case .decrease:
-          dispatch(action)
-          expectation.fulfill()
+          case .decrease:
+            dispatch(action)
+            expectation.fulfill()
 
-        default:
-          dispatch(action)
+          default:
+            dispatch(action)
+          }
         }
-      }
     }
 
     let store = AppStore(
@@ -141,5 +119,31 @@ class RecombineTests: XCTestCase {
     waitForExpectations(timeout: 1)
 
     XCTAssertEqual(store.counter, 0)
+  }
+}
+
+extension RecombineTests {
+  struct State: Changeable {
+    var counter = 0
+    var flag: Bool
+  }
+
+  enum Action {
+    case increase
+    case decrease
+    case toggle
+  }
+
+  typealias AppStore = Store<Action, State>
+
+  func counterReducer(action: Action, state: State) -> State {
+    switch action {
+    case .increase:
+      return state.change(\.counter, to: state.counter + 1)
+    case .decrease:
+      return state.change(\.counter, to: state.counter - 1)
+    case .toggle:
+      return state.change(\.flag, to: !state.flag)
+    }
   }
 }
