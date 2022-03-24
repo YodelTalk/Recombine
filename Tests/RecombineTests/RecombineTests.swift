@@ -80,6 +80,7 @@ class RecombineTests: XCTestCase {
     store.dispatch(.increase)
     store.dispatch(.decrease)
     store.dispatch(.decrease)
+    store.dispatch(.rename("Bob"))
 
     waitForExpectations(timeout: 1)
 
