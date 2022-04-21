@@ -7,7 +7,7 @@ jobs:
     steps:
       - uses: fwal/setup-swift@v1
         with:
-          swift-version: "5.3.0"
+          swift-version: "5.6.0"
       - uses: actions/checkout@v2
       - run: swift build
       - run: swift test

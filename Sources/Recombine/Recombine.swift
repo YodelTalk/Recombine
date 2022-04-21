@@ -9,5 +9,5 @@ public protocol Recombine: ObservableObject {
   typealias Middleware = (@escaping Dispatch, Store<Action, StoreState>) -> Dispatch
 
   func dispatch(_ action: Action)
-  subscript<T>(dynamicMember keyPath: KeyPath<StoreState, T>) -> T { get }
+  subscript<T>(dynamicMember _: KeyPath<StoreState, T>) -> T { get }
 }

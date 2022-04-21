@@ -2,11 +2,6 @@ import Combine
 
 @dynamicMemberLookup
 public class Store<Action, StoreState>: Recombine {
-  @Published private(set) var state: StoreState
-
-  private let reducers: [Reducer]
-  private let middlewares: [Middleware]
-
   public init(initialState: StoreState, reducers: [Reducer], middlewares: [Middleware] = []) {
     self.state = initialState
     self.reducers = reducers
@@ -15,7 +10,7 @@ public class Store<Action, StoreState>: Recombine {
 
   public func dispatch(_ action: Action) {
     let initialDispatch = { (_ action: Action) in
-      self.state = self.reducers.reduce(self.state, { state, reducer in reducer(action, state) })
+      self.state = self.reducers.reduce(self.state) { state, reducer in reducer(action, state) }
     }
 
     let finalDispatch = middlewares.reduce(
@@ -25,7 +20,16 @@ public class Store<Action, StoreState>: Recombine {
     finalDispatch(action)
   }
 
+  public func lense<T>(_ keyPath: KeyPath<StoreState, T>) -> LensedStore<Action, StoreState, T> {
+    return LensedStore<Action, StoreState, T>(self, keyPath: keyPath)
+  }
+
   public subscript<T>(dynamicMember keyPath: KeyPath<StoreState, T>) -> T {
     return state[keyPath: keyPath]
   }
+
+  @Published private(set) var state: StoreState
+
+  private let reducers: [Reducer]
+  private let middlewares: [Middleware]
 }
