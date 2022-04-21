@@ -141,21 +141,49 @@ class RecombineTests: XCTestCase {
     let flagLense = store.lense(\.flag)
     let usernameLense = store.lense(\.user.username)
 
-    XCTAssertEqual(counterLense.value, 0)
-    XCTAssertFalse(flagLense.value)
-    XCTAssertEqual(usernameLense.value, "Alice")
+    XCTAssertEqual(counterLense.state, 0)
+    XCTAssertFalse(flagLense.state)
+    XCTAssertEqual(usernameLense.state, "Alice")
 
     store.dispatch(.increase)
     store.dispatch(.toggle)
     store.dispatch(.rename("Bob"))
 
-    XCTAssertEqual(counterLense.value, 1)
-    XCTAssertTrue(flagLense.value)
-    XCTAssertEqual(usernameLense.value, "Bob")
+    XCTAssertEqual(counterLense.state, 1)
+    XCTAssertTrue(flagLense.state)
+    XCTAssertEqual(usernameLense.state, "Bob")
 
-    XCTAssertEqual(store.counter, counterLense.value)
-    XCTAssertEqual(store.flag, flagLense.value)
-    XCTAssertEqual(store.user.username, usernameLense.value)
+    XCTAssertEqual(store.counter, counterLense.state)
+    XCTAssertEqual(store.flag, flagLense.state)
+    XCTAssertEqual(store.user.username, usernameLense.state)
+  }
+
+  func testPublishers() {
+    let store = AppStore(
+      initialState: State(),
+      reducers: [reducer]
+    )
+
+    let counterLense = store.lense(\.counter)
+    let flagLense = store.lense(\.flag)
+    let usernameLense = store.lense(\.user.username)
+
+    let counterLenseChange = expectChange(of: counterLense.objectWillChange, count: 2)
+    let flagLenseChange = expectChange(of: flagLense.objectWillChange, count: 1)
+    let usernameLenseNoChange = expectNoChange(of: usernameLense.objectWillChange)
+    let usernameLenseChange = expectChange(of: usernameLense.objectWillChange, count: 1)
+
+    store.dispatch(.increase)
+    store.dispatch(.toggle)
+    store.dispatch(.increase)
+
+    wait(for: [counterLenseChange.expectation], timeout: 1)
+    wait(for: [flagLenseChange.expectation], timeout: 1)
+    wait(for: [usernameLenseNoChange.expectation], timeout: 1)
+
+    store.dispatch(.rename("Bob"))
+
+    wait(for: [usernameLenseChange.expectation], timeout: 1)
   }
 }
 
@@ -192,5 +220,49 @@ extension RecombineTests {
       user.username = username
       return state.change(\.user, to: user)
     }
+  }
+}
+
+extension RecombineTests {
+  typealias PublisherExpectation = (expectation: XCTestExpectation, cancellable: AnyCancellable)
+
+  func expectChange<T: Publisher>(
+    of publisher: T,
+    file _: StaticString = #file,
+    line _: UInt = #line,
+    count expectedCount: Int
+  ) -> PublisherExpectation where T.Failure == Never {
+    var count = 0
+    let expectation = expectation(description: "Publisher received \(expectedCount) of values")
+
+    let cancellable = publisher
+      .sink(
+        receiveValue: { _ in
+          count += 1
+          if count == expectedCount {
+            expectation.fulfill()
+          }
+        }
+      )
+
+    return (expectation, cancellable)
+  }
+
+  func expectNoChange<T: Publisher>(
+    of publisher: T,
+    file _: StaticString = #file,
+    line _: UInt = #line
+  ) -> PublisherExpectation where T.Failure == Never {
+    let expectation = expectation(description: "Publisher received values without expecting any")
+    expectation.isInverted = true
+
+    let cancellable = publisher
+      .sink(
+        receiveValue: { _ in
+          expectation.fulfill()
+        }
+      )
+
+    return (expectation, cancellable)
   }
 }

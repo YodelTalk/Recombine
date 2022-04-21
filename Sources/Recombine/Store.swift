@@ -20,12 +20,12 @@ public class Store<Action, StoreState>: Recombine {
     finalDispatch(action)
   }
 
-  public subscript<T>(dynamicMember keyPath: KeyPath<StoreState, T>) -> T {
-    return state[keyPath: keyPath]
-  }
-
   public func lense<T>(_ keyPath: KeyPath<StoreState, T>) -> LensedStore<Action, StoreState, T> {
     return LensedStore<Action, StoreState, T>(self, keyPath: keyPath)
+  }
+
+  public subscript<T>(dynamicMember keyPath: KeyPath<StoreState, T>) -> T {
+    return state[keyPath: keyPath]
   }
 
   @Published private(set) var state: StoreState

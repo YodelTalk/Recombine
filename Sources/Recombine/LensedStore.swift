@@ -1,20 +1,25 @@
 import Combine
 
 @dynamicMemberLookup
-public class LensedStore<Action, StoreState, LensedStoreState>: ObservableObject, Recombine {
+public class LensedStore<Action, StoreState, LensedStoreState: Equatable>: Recombine {
   public init(_ store: Store<Action, StoreState>, keyPath: KeyPath<StoreState, LensedStoreState>) {
     self.store = store
-    value = store.state[keyPath: keyPath]
+    self.state = store.state[keyPath: keyPath]
 
     cancellable = store.$state.sink {
-      self.value = $0[keyPath: keyPath]
+      let newState = $0[keyPath: keyPath]
+
+      if self.state != newState {
+        self.objectWillChange.send()
+        self.state = newState
+      }
     }
   }
 
-  @Published public private(set) var value: LensedStoreState
+  public private(set) var state: LensedStoreState
 
   public subscript<T>(dynamicMember keyPath: KeyPath<LensedStoreState, T>) -> T {
-    return value[keyPath: keyPath]
+    return state[keyPath: keyPath]
   }
 
   public func dispatch(_ action: Action) {
