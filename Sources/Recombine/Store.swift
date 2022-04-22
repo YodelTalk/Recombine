@@ -8,6 +8,8 @@ public class Store<Action, StoreState>: Recombine {
     self.middlewares = middlewares
   }
 
+  @Published public private(set) var state: StoreState
+
   public func dispatch(_ action: Action) {
     let initialDispatch = { (_ action: Action) in
       self.state = self.reducers.reduce(self.state) { state, reducer in reducer(action, state) }
@@ -27,8 +29,6 @@ public class Store<Action, StoreState>: Recombine {
   public subscript<T>(dynamicMember keyPath: KeyPath<StoreState, T>) -> T {
     return state[keyPath: keyPath]
   }
-
-  @Published private(set) var state: StoreState
 
   private let reducers: [Reducer]
   private let middlewares: [Middleware]

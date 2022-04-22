@@ -10,13 +10,12 @@ public class LensedStore<Action, StoreState, LensedStoreState: Equatable>: Recom
       let newState = $0[keyPath: keyPath]
 
       if self.state != newState {
-        self.objectWillChange.send()
         self.state = newState
       }
     }
   }
 
-  public private(set) var state: LensedStoreState
+  @Published public private(set) var state: LensedStoreState
 
   public subscript<T>(dynamicMember keyPath: KeyPath<LensedStoreState, T>) -> T {
     return state[keyPath: keyPath]

@@ -168,10 +168,10 @@ class RecombineTests: XCTestCase {
     let flagLense = store.lense(\.flag)
     let usernameLense = store.lense(\.user.username)
 
-    let counterLenseChange = expectChange(of: counterLense.objectWillChange, count: 2)
-    let flagLenseChange = expectChange(of: flagLense.objectWillChange, count: 1)
-    let usernameLenseNoChange = expectNoChange(of: usernameLense.objectWillChange)
-    let usernameLenseChange = expectChange(of: usernameLense.objectWillChange, count: 1)
+    let counterLenseChange = expectChange(of: counterLense.$state, count: 2)
+    let flagLenseChange = expectChange(of: flagLense.$state, count: 1)
+    let usernameLenseNoChange = expectNoChange(of: usernameLense.$state)
+    let usernameLenseChange = expectChange(of: usernameLense.$state, count: 1)
 
     store.dispatch(.increase)
     store.dispatch(.toggle)
@@ -236,6 +236,7 @@ extension RecombineTests {
     let expectation = expectation(description: "Publisher received \(expectedCount) of values")
 
     let cancellable = publisher
+      .dropFirst()
       .sink(
         receiveValue: { _ in
           count += 1
@@ -257,6 +258,7 @@ extension RecombineTests {
     expectation.isInverted = true
 
     let cancellable = publisher
+      .dropFirst()
       .sink(
         receiveValue: { _ in
           expectation.fulfill()
