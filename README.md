@@ -19,9 +19,9 @@ typealias AppStore = Store<Action, State>
 func counterReducer(action: Action, state: State) -> State {
   switch action {
   case .increase:
-    return state.change(\.counter, to: state.counter + 1)
+    return state.changed(\.counter, to: state.counter + 1)
   case .decrease:
-    return state.change(\.counter, to: state.counter - 1)
+    return state.changed(\.counter, to: state.counter - 1)
   }
 }
 

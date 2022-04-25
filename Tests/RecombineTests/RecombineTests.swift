@@ -185,6 +185,16 @@ class RecombineTests: XCTestCase {
 
     wait(for: [usernameLenseChange.expectation], timeout: 1)
   }
+
+  func testStateChanges() {
+    var mutableState = State()
+    mutableState.change(\.user.username, to: "Bob")
+    XCTAssertEqual(mutableState.user.username, "Bob")
+
+    let immutableState = State()
+    let changedStare = immutableState.changed(\.user.username, to: "Bob")
+    XCTAssertEqual(changedStare.user.username, "Bob")
+  }
 }
 
 extension RecombineTests {
@@ -210,15 +220,15 @@ extension RecombineTests {
   func reducer(action: Action, state: State) -> State {
     switch action {
     case .increase:
-      return state.change(\.counter, to: state.counter + 1)
+      return state.changed(\.counter, to: state.counter + 1)
     case .decrease:
-      return state.change(\.counter, to: state.counter - 1)
+      return state.changed(\.counter, to: state.counter - 1)
     case .toggle:
-      return state.change(\.flag, to: !state.flag)
+      return state.changed(\.flag, to: !state.flag)
     case let .rename(username):
       var user = state.user
       user.username = username
-      return state.change(\.user, to: user)
+      return state.changed(\.user, to: user)
     }
   }
 }

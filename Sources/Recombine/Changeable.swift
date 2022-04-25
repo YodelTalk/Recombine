@@ -1,9 +1,13 @@
 public protocol Changeable {}
 
 public extension Changeable {
-  func change<T>(_ path: WritableKeyPath<Self, T>, to value: T) -> Self {
+  func changed<T>(_ path: WritableKeyPath<Self, T>, to value: T) -> Self {
     var clone = self
-    clone[keyPath: path] = value
+    clone.change(path, to: value)
     return clone
+  }
+
+  mutating func change<T>(_ path: WritableKeyPath<Self, T>, to value: T) {
+    self[keyPath: path] = value
   }
 }
