@@ -1,10 +1,22 @@
 # Recombine ![test](https://github.com/yodeltalk/recombine/actions/workflows/test.yml/badge.svg)
 
-Our take on a [Redux](https://github.com/reduxjs/redux)-inspired state managment for Swift.
+Our take on a [Redux](https://github.com/reduxjs/redux)-inspired state management for Swift.
+
+## Installation (via SPM)
+
+In your `Package.swift` add the following:
+
+```swift
+dependencies: [
+  .package(url: "https://github.com/YodelTalk/Recombine.git", .branch("master"))
+]
+```
 
 ## Usage
 
 ```swift
+import Recombine
+
 struct State: Changeable {
   var counter = 0
 }
