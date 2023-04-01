@@ -1,4 +1,4 @@
-# Recombine ![test](https://github.com/yodeltalk/recombine/actions/workflows/test.yml/badge.svg)
+# Recombine [![](https://github.com/yodeltalk/recombine/actions/workflows/test.yml/badge.svg)](https://github.com/YodelTalk/Recombine/actions/workflows/test.yml)
 
 Our take on a [Redux](https://github.com/reduxjs/redux)-inspired state management for Swift.
 
@@ -8,7 +8,7 @@ In your `Package.swift` add the following:
 
 ```swift
 dependencies: [
-  .package(url: "https://github.com/YodelTalk/Recombine.git", .branch("master"))
+  .package(url: "https://github.com/YodelTalk/Recombine.git", .branch("main"))
 ]
 ```
 
