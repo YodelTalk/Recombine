@@ -2,12 +2,20 @@ on: [push, pull_request]
 
 jobs:
   test:
+    name: Test
     runs-on: macos-latest
+    continue-on-error: ${{ matrix.experimental }}
 
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
-        swift: ["5.5", "5.6"]
+        swift: [5.5, 5.6, 5.7]
+        experimental: [false]
+
+        # Swift 5.8 is not yet supported by fwal/setup-swift@v1
+        include:
+          - swift: 5.8
+            experimental: true
 
     steps:
       - uses: fwal/setup-swift@v1
